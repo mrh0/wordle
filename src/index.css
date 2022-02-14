@@ -5,3 +5,22 @@
 html, body {
     user-select: none;
 }
+
+.rainbow {
+    background: linear-gradient(to right, #6666ff, #0099ff , #00ff00, #ff3399, #6666ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: rainbowAnimation 6s ease-in-out infinite;
+    background-size: 400% 100%;
+}
+
+@keyframes rainbowAnimation {
+    0%, 100% {
+        background-position: 0 0;
+    }
+
+    50% {
+        background-position: 100% 0;
+    }
+}

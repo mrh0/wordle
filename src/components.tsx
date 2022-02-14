@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Wordle from "./Wordle";
 import { CellData } from "./types";
+import { text } from 'stream/consumers';
 type Elem = JSX.Element;
 
 export function Cell(props: {cell: CellData, game: Wordle}) {
@@ -33,7 +34,10 @@ export function Cell(props: {cell: CellData, game: Wordle}) {
 }
 
 export function Row(props: {cells: Elem[], current: boolean}) {
-    return props.current ? <div className="flex animate-pulse">{props.cells}</div> : <div className="flex">{props.cells}</div>;
+    return props.current ? 
+    <div className="flex animate-pulse">{props.cells}</div> 
+    : 
+    <div className="flex">{props.cells}</div>;
 }
 
 export function Board(props: {game: Wordle}) {
@@ -44,6 +48,9 @@ export function Board(props: {game: Wordle}) {
         switch(type) {
             case 'accepted':
                 setLine(game.getUserLine());
+                break;
+            case 'end':
+                setLine(-1);
                 break;
         }
     })
@@ -98,4 +105,25 @@ export function UsedLetter(props: {game: Wordle, letter: string, used: boolean})
     <div className="bg-gray-600 rounded-md w-8 px-1 pb-4 pt-2 mx-2 my-2 text-2xl text-slate-50 align-middle text-center font-bold">
         <p>{props.letter}</p>
     </div> 
+}
+
+export function Title(props: {game: Wordle, text: string}) {
+    const {game} = props;
+    const [text, setText] = useState(props.text);
+
+    game.addEventListener((type) => {
+        switch(type) {
+            case 'win':
+                setText("YOU WIN!");
+                break;
+            case 'lose':
+                setText("YOU LOSE!");
+                break;
+        }
+    })
+
+    return text === "YOU WIN!" ? 
+        <h1 className='rainbow text-center font-bold text-5xl text-slate-50 mb-6 mt-2'>{text}</h1>
+        :
+        <h1 className='text-center font-bold text-5xl text-slate-50 mb-6 mt-2'>{text}</h1>
 }

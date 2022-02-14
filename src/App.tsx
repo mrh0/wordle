@@ -1,5 +1,5 @@
 import './App.css';
-import {Board, UsedLetters} from './components'
+import {Board, Title, UsedLetters} from './components'
 import Wordle from './Wordle';
 
 
@@ -22,7 +22,7 @@ document.addEventListener('keydown', (evt) => {
 export default function App() {
 	return (
 		<div className='w-max h-screen bg-gray-800 px-4 py-4 m-auto shadow-gray-800 shadow-2xl'>
-			<h1 className='text-center font-bold text-5xl text-slate-50 mb-6 mt-2'>HELLO WORDLE!</h1>
+			<Title game={game} text="HELLO WORDLE!"/>
 			<Board game={game}/>
 			<UsedLetters game={game}/>
 		</div>

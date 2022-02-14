@@ -1,7 +1,7 @@
 import { CellData } from "./types";
 import allwords from './words'
 
-type EventType = 'change' | 'start' | 'end' | 'accepted' | 'use';
+type EventType = 'change' | 'start' | 'end' | 'accepted' | 'use' | 'win' | 'lose';
 type EventCallback = (evt: EventType) => void;
 
 export default class Wordle {
@@ -18,6 +18,7 @@ export default class Wordle {
     private used: {[letter: string]:boolean};
 
     private words: string[];
+    private ended: boolean;
 
     constructor(width: number, height: number, hard: boolean) {
         this.width = width;
@@ -32,9 +33,19 @@ export default class Wordle {
         this.used = {};
 
         this.words = allwords.hard.concat(allwords.easy);
+        this.ended = false;
 
         const words = hard ? allwords.hard : allwords.easy;
         this.setWord(words[Math.floor(Math.random() * words.length)]);
+
+        this.addEventListener((type) => {
+            switch(type) {
+                case 'end':
+                    this.ended = true;
+                    this.userLine=this.height;
+                    break;
+            }
+        })
     }
 
     public reset() {
@@ -87,6 +98,11 @@ export default class Wordle {
                 buff[index] = "";
             }
         }
+        if(word === this.word) {
+            this.triggerEvent('win');
+            this.triggerEvent('end');
+            console.log("Won");
+        }
     }
 
     public setLine(line: number, word: string) {
@@ -138,6 +154,8 @@ export default class Wordle {
     }
 
     public userTyped(char: string) {
+        if(this.ended)
+            return;
         char = char.toUpperCase();
         if(this.userInput.length < this.width) {
             this.userInput += char;
@@ -162,8 +180,10 @@ export default class Wordle {
         
         this.userInput = "";
         this.userLine++;
-        if(this.userLine >= this.height) {
+        if(this.userLine >= this.height && !this.ended) {
+            this.triggerEvent('lose');
             this.triggerEvent('end');
+            console.log("Lost");
             return true;
         }
 
