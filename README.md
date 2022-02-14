@@ -1,5 +1,5 @@
 # Hello Wordle
-Wordle clone
+Wordle clone by mrh0 (C) 2022
 
 Run: `npm start` or `yarn start`
 
