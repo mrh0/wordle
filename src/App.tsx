@@ -1,24 +1,14 @@
-import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import {Board, Cell} from './components'
+import Wordle from './Wordle';
 
 function App() {
+  const game = new Wordle(5, 5);
+  game.putWord(0, "Hello");
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className='w-max h-max bg-gray-800 px-4 py-4'>
+      <p className='text-slate-50 text-center'>Hello Wordle</p>
+      <Board game={game}/>
     </div>
   );
 }
