@@ -1,6 +1,7 @@
 import { CellData } from "./types";
+import allwords from './words'
 
-type EventType = 'change' | 'start' | 'end';
+type EventType = 'change' | 'start' | 'end' | 'accepted' | 'use';
 type EventCallback = (evt: EventType) => void;
 
 export default class Wordle {
@@ -14,7 +15,11 @@ export default class Wordle {
     
     private listeners: EventCallback[];
 
-    constructor(width: number, height: number, words: string[]) {
+    private used: {[letter: string]:boolean};
+
+    private words: string[];
+
+    constructor(width: number, height: number, hard: boolean) {
         this.width = width;
         this.height = height;
         this.board = this.initBoard();
@@ -24,7 +29,11 @@ export default class Wordle {
         this.userLine = 0;
 
         this.listeners = [];
+        this.used = {};
 
+        this.words = allwords.hard.concat(allwords.easy);
+
+        const words = hard ? allwords.hard : allwords.easy;
         this.setWord(words[Math.floor(Math.random() * words.length)]);
     }
 
@@ -42,6 +51,10 @@ export default class Wordle {
         return this.board;
     }
 
+    public getUsed() {
+        return this.used;
+    }
+
     private setWord(word: string) {
         if(word.length !== this.width)
             throw "Invalid word length";
@@ -51,7 +64,9 @@ export default class Wordle {
 
     public setLineData(line: number, word: string) {
         word = word.toUpperCase();
-        console.log(word, this.word);
+        
+        this.useLetters(word);
+
         let buff = this.word.split("");
         for(let i = 0; i < word.length; i++) {
             this.board[line][i].letter = word.charAt(i);
@@ -72,12 +87,21 @@ export default class Wordle {
                 buff[index] = "";
             }
         }
-        console.log(buff);
     }
 
     public setLine(line: number, word: string) {
         this.setLineData(line, word);
         this.triggerEvent('change');
+    }
+
+    public useLetters(word: string) {
+        for(let letter of word.split(""))
+            this.used[letter] = true;
+        this.triggerEvent('use');
+    }
+
+    public isLetterUsed(letter: string) {
+        return !!this.used[letter];
     }
 
     public initBoard(): CellData[][] {
@@ -131,9 +155,23 @@ export default class Wordle {
     public userSubmit() {
         if(this.userInput.length !== this.width)
             return false;
+
+        if(this.words.indexOf(this.userInput.toLowerCase()) === -1)
+            return false;
         this.setLine(this.userLine, this.userInput);
-        this.userLine++;
+        
         this.userInput = "";
+        this.userLine++;
+        if(this.userLine >= this.height) {
+            this.triggerEvent('end');
+            return true;
+        }
+
+        this.triggerEvent('accepted');
         return true;
+    }
+
+    public getUserLine() {
+        return this.userLine;
     }
 };

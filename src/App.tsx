@@ -1,11 +1,11 @@
 import './App.css';
-import {Board} from './components'
+import {Board, UsedLetters} from './components'
 import Wordle from './Wordle';
-import words from './words'
+
 
 const hardMode = window.location.pathname.match(/\/?hard\/?/);
 console.log("Mode:", hardMode ? "Hard" : "Easy");
-const game = new Wordle(5, 6, hardMode ? words.hard : words.easy);
+const game = new Wordle(5, 6, !!hardMode);
 
 document.addEventListener('keypress', (evt) => {
 	if(evt.key.match(/^[a-zA-Z]{1}$/))
@@ -21,9 +21,10 @@ document.addEventListener('keydown', (evt) => {
 
 export default function App() {
 	return (
-		<div className='w-max h-max bg-gray-800 px-4 py-4'>
-			<p className='text-slate-50 text-center'>Hello Wordle</p>
+		<div className='w-max h-screen bg-gray-800 px-4 py-4 m-auto shadow-gray-800 shadow-2xl'>
+			<h1 className='text-center font-bold text-5xl text-slate-50 mb-6 mt-2'>HELLO WORDLE!</h1>
 			<Board game={game}/>
+			<UsedLetters game={game}/>
 		</div>
 	);
 }
