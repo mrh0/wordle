@@ -1,6 +1,8 @@
 # Hello Wordle
 Wordle clone by mrh0 (C) 2022
 
+Play: https://mrh0.github.io/wordle/index.html
+
 Run: `npm start` or `yarn start`
 
 Build:  `yarn build`
