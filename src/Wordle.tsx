@@ -89,7 +89,13 @@ export default class Wordle {
         return this.word;
     }
 
+    public getDifficulty() {
+        return this.difficulty;
+    }
+
     private setWord(word: string, index: number) {
+        if(word == null)
+            throw "Invalid word";
         if(word.length !== this.width)
             throw "Invalid word length";
         this.word = word.toUpperCase();

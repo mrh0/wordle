@@ -1,5 +1,5 @@
 import './App.css';
-import {Board, Title, UsedLetters} from './components'
+import {Board, Footer, Title, UsedLetters} from './components'
 import Wordle from './Wordle';
 
 const s = new URLSearchParams(window.location.search);
@@ -42,8 +42,17 @@ export default function App() {
 			<Title game={game} text="HELLO WORDLE!"/>
 			<Board game={game}/>
 			<UsedLetters game={game}/>
-			<p onClick={() => game.reset()} className='text-center font-bold underline text-1xl text-slate-50 mb-1 hover:cursor-pointer'>NEW WORD</p>
-			<p className='text-center font-bold text-1xl text-slate-50 mb-1'>© MRH0 2022</p>
+			<Footer game={game} setHardmode={setHardmode}/>
 		</div>
 	);
+}
+
+function setHardmode() {
+	const s = new URLSearchParams(window.location.search);
+	if(s.has("hard"))
+		s.delete("hard");
+	else
+		s.set("hard", "");
+	s.delete("word");
+	window.location.search = s.toString();
 }

@@ -133,3 +133,23 @@ export function Title(props: {game: Wordle, text: string}) {
             return <><h1 className='text-center font-bold text-5xl text-slate-50 mb-1 mt-2'>{text}</h1><p className='text-center font-bold text-1xl text-slate-50 mb-1'>{"MAKE A GUESS"}</p></>;
     }    
 }
+
+export function Footer(props: {game: Wordle, setHardmode: () => void}) {
+    const {game, setHardmode} = props;
+    const [modeText, setModeText] = useState(game.getDifficulty());
+
+    game.addEventListener((type) => {
+        switch(type) {
+            case 'reset':
+                setModeText(game.getDifficulty());
+                break;
+        }
+    })
+
+    return <><p className='text-center font-bold text-1xl text-slate-50 mb-1'>
+        <span className='hover:cursor-pointer' onClick={() => game.reset()}>NEW WORD</span>
+        <span className='mx-2'>|</span>
+        <span className='hover:cursor-pointer' onClick={() => setHardmode()}>{(modeText === 'hard' ? 'EASY' : 'HARD') + " MODE"}</span>
+        </p>
+    <p onClick={() => window.location.href = "https://github.com/mrh0/wordle"} className='text-center font-bold text-1xl text-slate-50 mb-1 hover:cursor-pointer'>© MRH0 2022</p></>
+}
