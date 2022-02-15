@@ -1,7 +1,7 @@
 import { CellData } from "./types";
 import allwords from './words'
 
-type EventType = 'change' | 'start' | 'end' | 'accepted' | 'use' | 'win' | 'lose';
+type EventType = 'change' | 'start' | 'end' | 'accepted' | 'use' | 'win' | 'lose' | 'setword' | 'reset';
 type EventCallback = (evt: EventType) => void;
 
 export default class Wordle {
@@ -9,6 +9,7 @@ export default class Wordle {
     private height: number;
     private board: CellData[][];
     private word: string;
+    private wordIndex: number;
 
     private userInput: string;
     private userLine: number;
@@ -20,11 +21,14 @@ export default class Wordle {
     private words: string[];
     private ended: boolean;
 
+    private difficulty: 'easy' | 'hard';
+
     constructor(width: number, height: number, hard: boolean) {
         this.width = width;
         this.height = height;
         this.board = this.initBoard();
         this.word = "";
+        this.wordIndex = 0;
 
         this.userInput = "";
         this.userLine = 0;
@@ -35,8 +39,7 @@ export default class Wordle {
         this.words = allwords.hard.concat(allwords.easy);
         this.ended = false;
 
-        const words = hard ? allwords.hard : allwords.easy;
-        this.setWord(words[Math.floor(Math.random() * words.length)]);
+        this.difficulty = hard ? 'hard' : 'easy';
 
         this.addEventListener((type) => {
             switch(type) {
@@ -45,17 +48,33 @@ export default class Wordle {
                     this.userLine=this.height;
                     break;
             }
-        })
+        });
+
+        this.reset();
     }
 
     public reset() {
-        this.board = this.initBoard();
-        this.word = "";
-
         this.userInput = "";
         this.userLine = 0;
 
-        this.listeners = [];
+        this.used = {};
+        this.ended = false;
+
+        this.board.map(r => r.map(c => {
+            c.color = 'gray';
+            c.letter = '';
+            return c;
+        }))
+
+        const words = this.difficulty === 'hard' ? allwords.hard : allwords.easy;
+        const index = Math.floor(Math.random() * words.length);
+        this.setWordByIndex(index);
+        this.triggerEvent('reset');
+        this.triggerEvent('start');
+    }
+
+    public getWordIndex() {
+        return this.wordIndex;
     }
 
     public getBoard() {
@@ -66,11 +85,22 @@ export default class Wordle {
         return this.used;
     }
 
-    private setWord(word: string) {
+    public getWord() {
+        return this.word;
+    }
+
+    private setWord(word: string, index: number) {
         if(word.length !== this.width)
             throw "Invalid word length";
         this.word = word.toUpperCase();
+        this.wordIndex = index;
         console.log("Word is: ", this.word);
+        this.triggerEvent('setword');
+    }
+
+    public setWordByIndex(index: number) {
+        const words = this.difficulty === 'hard' ? allwords.hard : allwords.easy;
+        this.setWord(words[index], index);
     }
 
     public setLineData(line: number, word: string) {

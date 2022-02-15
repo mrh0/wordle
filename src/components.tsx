@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import Wordle from "./Wordle";
 import { CellData } from "./types";
-import { text } from 'stream/consumers';
 type Elem = JSX.Element;
 
 export function Cell(props: {cell: CellData, game: Wordle}) {
@@ -119,11 +118,18 @@ export function Title(props: {game: Wordle, text: string}) {
             case 'lose':
                 setText("YOU LOSE!");
                 break;
+            case 'start':
+                setText("HELLO WORDLE!");
+                break;
         }
     })
 
-    return text === "YOU WIN!" ? 
-        <h1 className='rainbow text-center font-bold text-5xl text-slate-50 mb-6 mt-2'>{text}</h1>
-        :
-        <h1 className='text-center font-bold text-5xl text-slate-50 mb-6 mt-2'>{text}</h1>
+    switch(text) {
+        case "YOU WIN!":
+            return <><h1 className='rainbow text-center font-bold text-5xl text-slate-50 mb-1 mt-2'>{text}</h1><p className='text-center font-bold text-1xl text-slate-50 mb-1'>{game.getWord() + " IS CORRECT"}</p></>;
+        case "YOU LOSE!":
+            return <><h1 className='text-center font-bold text-5xl text-slate-50 mb-1 mt-2'>{text}</h1><p className='text-center font-bold text-1xl text-slate-50 mb-1'>{"THE WORD WAS " + game.getWord()}</p></>;
+        default:
+            return <><h1 className='text-center font-bold text-5xl text-slate-50 mb-1 mt-2'>{text}</h1><p className='text-center font-bold text-1xl text-slate-50 mb-1'>{"MAKE A GUESS"}</p></>;
+    }    
 }

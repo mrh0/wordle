@@ -2,10 +2,27 @@ import './App.css';
 import {Board, Title, UsedLetters} from './components'
 import Wordle from './Wordle';
 
-
-const hardMode = window.location.pathname.match(/\/?hard\/?/);
+const s = new URLSearchParams(window.location.search);
+const hardMode = s.has('hard')//!!s.match(/.*[\?|\&]hard/);
+let wordIndex = -1;
+if(s.has('word'))
+	wordIndex = Number.parseInt(s.get('word') || '-1');
 console.log("Mode:", hardMode ? "Hard" : "Easy");
-const game = new Wordle(5, 6, !!hardMode);
+
+const game = new Wordle(5, 6, hardMode);
+
+if(wordIndex > -1)
+	game.setWordByIndex(wordIndex);
+
+game.addEventListener((type) => {
+	switch(type) {
+		case 'setword':
+			const s = new URLSearchParams(window.location.search);
+			s.set("word", ""+game.getWordIndex());
+			window.location.search = s.toString();
+			break;
+	}
+})
 
 document.addEventListener('keypress', (evt) => {
 	if(evt.key.match(/^[a-zA-Z]{1}$/))
@@ -25,6 +42,8 @@ export default function App() {
 			<Title game={game} text="HELLO WORDLE!"/>
 			<Board game={game}/>
 			<UsedLetters game={game}/>
+			<p onClick={() => game.reset()} className='text-center font-bold underline text-1xl text-slate-50 mb-1 hover:cursor-pointer'>NEW WORD</p>
+			<p className='text-center font-bold text-1xl text-slate-50 mb-1'>© MRH0 2022</p>
 		</div>
 	);
 }
